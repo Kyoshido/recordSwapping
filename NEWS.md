@@ -1,3 +1,9 @@
+# recordSwapping 0.3.3
+
+* included function `infoLoss()` to calculated various information loss measures after `recordSwap()` was applied. Function `infoLoss()` is heavily inspired by function `cellKey::ck_cnt_measures()` but accepts the micro data as input instead of frequency or magnitude counts.
+* changed variable names and content of dummy data created by `createDat`.
+* updated documentation and fixed some typos.
+
 # recordSwapping 0.3.2
 
 * extended testing suit

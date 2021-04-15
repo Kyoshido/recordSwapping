@@ -1,4 +1,4 @@
 library(testthat)
-library(recordSwap)
+library(recordSwapping)
 
-test_check("recordSwap")
+test_check("recordSwapping")

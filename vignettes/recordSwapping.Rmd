@@ -2,22 +2,20 @@
 title: "Targeted Record Swapping"
 author: "Johannes Gussenbauer"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: bookdown::html_vignette2
 vignette: >
   %\VignetteIndexEntry{recordSwapping}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
+pkgdown:
+  as_is: true
+  set_null_theme: false
 ---
-
-
-
-
 
 
 ```{r setup, include=FALSE}
 library(data.table)
 library(recordSwapping)
-library(ggplot2)
 ```
 
 ## Overview
@@ -50,7 +48,7 @@ recordSwap(std::vector< std::vector<int> > data, int hid,
 + **risk** vector of vector containing the risk of each individual for each hierarchy level. `risk[0]` corresponds to the risks of the first record for all hierachy levels, `risk[1]` for the second record and so on. Should be ignored for now, is not fully tested yet.
 + **risk_threshold** risk threshold which determines if a record has to be swapped and over which hierarchy level. This overwrites k_anonymity.
 Should be ignored for now, is not fully tested yet.
-+ **k_anonymity** integer defining the threshhold of high risk households (k-anonymity). Right now this is implemented as `k_anonymity <= counts`.
++ **k_anonymity** integer defining the threshhold of high risk households (k-anonymity). A record is not at risk if `k_anonymity >= counts`.
 + **risk_variables** column indices of variables in \code{data} which will be considered for estimating the risk. This is only used if `risk` was not supplied.
 + **carry_along** column indices of variables in \code{data} which are additionally swapped. These variables do not interfere with the procedure of finding a record to swap with. This parameter is only used at the end of the procedure when swapping the hierarchies.
 + **seed** integer defining the seed for the random number generator, for reproducibility.
@@ -67,11 +65,27 @@ Should be ignored for now, is not fully tested yet.
 
 #### Sampling probability
 
-+ **C++-Code**: Sampling probability is directly derived from the counts over the risk and each geographic variables, by 
++ **C++-Code**: Sampling probability $p_{y,h}$ for household $y$ at the geographic hierarhcy $h$ is derived from the risks $r_{i,h}$ of all individuals living in the same household. 
+The risk $r_{i,h}$ for each individual $i$ in geographic hierarchy ($h$) is currently estimated through the k-anonymity rule. $r_{i,h}$ is then defined as 
+
 $$
-p_{i,h}=\max\limits_{j \in H_i}\frac{1}{counts_{j,h}}
+r_{i,h} = (\sum\limits_{j=1}^{N_{g_1}}1[v_{1(i)}=v_{1(j)} \land ... \land v_{p(i)}=v_{p(j)}])^{-1} \quad ,
 $$
-where $counts_{j,h}$ is the number of counts for member $j$ in household $i$ in hierarchy $h$. This sampling probability is used for selecting households as well as donor households. 
+
+with $v_1,\ldots,v_p$ as a set of risk variables, $N_{g_1}$ as the number of persons living in region $g_1$ and $1[...]$ as the indicator function.
+$1[v_{1(i)}=v_{1(j)} \land ... \land v_{p(i)}=v_{p(j)}]$ is 1 if individual $j$ as the same values for risk variables $v_1,\ldots,v_p$ as individual $i$ and is 0 otherwise.
+Casually speaking 
+
+$$
+r_{i,h} \sim \frac{1}{counts} \quad .
+$$
+
+The sampling probabiliy for household household $y$, $p_{y,h}$ in hierarchy $h$, is then defined by the maximum of risk across all household member
+
+$$
+p_{y,h} = \max_{i\text{ in household }y}(r_{i,h}) \quad .
+$$
+This sampling probability is used for selecting households for swapping as well as donor households. 
 
 + **SAS-Code**: Sampling probability is derived from the multiple factors.
     
@@ -93,17 +107,18 @@ with $SA$ as the sample size, $N_{high}$ as the number of high risk households i
 
 #### Swapping Records
 
-+ **C++-Code**: Swaps are made in every hierarchy level and records wich do not fullfill the k-anonymity are swapped. The donor set of records to be swapped with is always made out of every record wich do not belong to the same geographic area as the swapped households. At the lowest hierarchy level an additional number of households is swapped such that the proportion of households swapped is equal the number in `swaprate`. If the proportion of already swapped households succeeds this values then only records wich do not fullfill the k-anonymity are swapped.
++ **C++-Code**: Swaps are made in every hierarchy level and records wich do not fullfill the k-anonymity are swapped. The donor set of records to be swapped with is always made out of every record wich does not belong to the same geographic area as the swapped households. At the lowest hierarchy level an additional number of households is swapped such that the proportion of households swapped is equal the number in `swaprate`. If the proportion of already swapped households succeeds this values then records wich do not fullfill the k-anonymity are also swapped.
 
-![Example for swapping households. The number represent the number of high risk households at each hierachy level.](../docs/Examplecpp.png)
 
-Figure 1 displays an example with hierarchy levels county > municipality > district where the number of high risk households are displayed at the end of the edges. For instance in the first county there are 5 high risk households which will be swapped with households from county 2. In the first municipality there are 10 high risk households which will be swapped with households which are not in the first municipality. At the lowest level, the districts, the number of swaps, $n_{swaps}$ is for the first district is defined by
+![Example for swapping households. The number represent the number of high risk households at each hierachy level.](diagram.png){width=100%}
+
+Figure 1 displays an example with hierarchy levels NUTS1 > NUTS2 > NUTTS3 where the number of high risk households are displayed at the end of the edges. For instance in the first NUTS1 region there are 5 high risk households which will be swapped with households from other NUTS1 regions. In the first NUTS2 region there are 10 high risk households which will be swapped with households which are not in the same NUTS2 region. At the lowest level, the NUTS3 regions, the number of swaps, $n_{swaps}$ for the first district is defined by
 
 $$
 n_{swaps} = 2 + Rest\\
 Rest = \max(0,N\cdot s - n_{already}) 
 $$
-with $N$ as the number of householdsin the district, $n_{already}$ as the number of already swapped households in the district and $s$ as the swap rate. 
+with $N$ as the number of households in the district, $n_{already}$ as the number of already swapped households in the district and $s$ as the swap rate. 
 
 + **SAS-Code** Swaps are made in every hierarchy level and depending on the sampling probability high risk households are more likely to be swapped than low risk households, but they are not mandatorilly swapped. The number of swappes in each hierachy level is defined by the number of high risk records and total number records in the geographic area.
 For instance having the geographic hierarchy county > municipality > district, the number of Swaps in the municipality $m$ of county $n$ is defined by
@@ -130,7 +145,7 @@ with $H_m$ as the proportion of high risk households in municipality $m$.
 The package was tested on randomly generated data, which contained 5 geographic levels and some other soziodemographic variables.
 ```{r}
 library(recordSwapping)
-dat <- create.dat(N=100000)
+dat <- createDat(N=100000)
 dat
 ```
 
@@ -196,9 +211,9 @@ Instead of column names index vectors can be supplied for parameters `hid`, `hie
 
 ```{r}
 hierarchy <- c(1,2) # ~ c("nuts1","nuts2")
-risk_variables <- c(12,8,9) # ~ c("hincome","ageGroup","gender")
-hid <- 6 # ~ "hid"
-similar <- 7 # ~ "hsize"
+risk_variables <- c(11,7,8) # ~ c("hincome","ageGroup","gender")
+hid <- 5 # ~ "hid"
+similar <- 6 # ~ "hsize"
 
 dat_swapped <- recordSwap(data = dat, hid = hid,
                           hierarchy = hierarchy,
@@ -220,7 +235,7 @@ And thus it is not possible to swap the necessary number of households due too l
 
 ```{r}
 # demonstrate on small data set
-dat <- create.dat(N=10000)
+dat <- createDat(N=10000)
 hierarchy <- c("nuts1","nuts2")
 risk_variables <- "gender"
 # similarity profile contains:
@@ -279,18 +294,7 @@ nrow(dat_compare[V1.x!=V1.y])
 Using the function `recordSwap()` like above always results in swapping the variables defined through variable `hierarchy`.
 Sometimes it might be useful to swap more variables then the ones stated in hierarchy.
 
-Consider the following case where the variable `nuts3` is not a single digit integer but an integer which is unique across `nuts1` and `nuts2` levels
-
-```{r}
-set.seed(1234)
-dat <- create.dat(100000)
-
-dat[,nuts3:=do.call(paste,.SD),.SDcols=c(hierarchy,"nuts3")]
-dat[,nuts3:=as.numeric(factor(nuts3))]
-dat
-```
-
-If we would apply the record swapping using `hierarchy`-levels `nuts1` and `nuts2` then the `nuts3`-variable in our data set will stay the same. Thus for the resulting data set the variables `nuts1` and `nuts2` are no longer coherent with `nuts3`.
+When we apply the record swapping using `hierarchy`-levels `nuts1` and `nuts2` then the `nuts3` and `lau2`-variable in our data set will stay unchanged. Thus for the resulting data set the variables `nuts1` and `nuts2` are no longer coherent with `nuts3` and `lau2`.
 
 Let's have a more detailed look at the problem
 
@@ -314,17 +318,17 @@ dat_compare <- merge(dat[,.(paste(nuts1[1],nuts2[1])),by=hid],
 head(dat_compare[V1.x!=V1.y])
 ```
 
-For `nuts1==2` and `nuts2==7` the `nuts3` variables takes on values
+For `nuts1==1` and `nuts2==14` the `nuts3` variables takes on values
 ```{r}
-dat[nuts1==2&nuts2==7,sort(unique(nuts3))]
+dat[nuts1==1&nuts2==14,sort(unique(nuts3))]
 ```
 
-In the swapped data set there are however many more values now
+In the swapped data set there are however many more values for `nuts3` now which are not coherent with `nuts1==1` and `nuts2==14`
 ```{r}
-dat_swapped[nuts1==2&nuts2==7,sort(unique(nuts3))]
+dat_swapped[nuts1==1&nuts2==14,sort(unique(nuts3))]
 ```
 
-With the use of parameter `carry_along` one can define certain variables which are additionally swapped but do not interfere with the risk calculation, sampling and procedure of finding a donor.
+Using the parameter `carry_along` one can define certain variables which are additionally swapped but do not interfere with the risk calculation, sampling and procedure of finding a donor.
 
 ```{r}
 dat_swapped2 <- recordSwap(data = copy(dat),
@@ -333,7 +337,7 @@ dat_swapped2 <- recordSwap(data = copy(dat),
                         similar = similar,
                         risk_variables = risk_variables,
                         swaprate = 0.05,
-                        carry_along = "nuts3", # <- swap nuts3 variable as well
+                        carry_along = c("nuts3","lau2"), # <- swap nuts3 and lau2 variable as well
                         seed=1234L)
 
 geoVars <- c("nuts1", "nuts2", "nuts3")
@@ -342,7 +346,7 @@ setorderv(dat_geo,geoVars)
 dat_geo_swapped <- dat_swapped2[!duplicated(hid),..geoVars]
 setorderv(dat_geo_swapped,geoVars)
 
-# check of value combinations of swapped and original data are the same
+# check if value combinations of swapped and original data are the same
 all.equal(dat_geo,dat_geo_swapped)
 ```
 
@@ -375,11 +379,51 @@ dat_swapped3 <- recordSwap(data = copy(dat),
 
 The output now has an additional column named `hid_swapped` which contains the household ID with which a household was swapped with.
 
-
 Number of swapped `hid`s
 ```{r}
 dat_swapped3[!duplicated(hid),.N,by=.(id_swapped = hid!=hid_swapped)]
 ```
 
+### Information loss
+
+With the function `infoLoss()` one can calculate various information loss measures over a pre defined frequency table.
+This frequency table is defined by the paramter `table_vars` which accepts column names of the original and swapped micro data.
+The frequency table is internally constructed using both the original and swapped micro data. Afterwards various information loss measures are estimated over each of the table cells. 
+
+```{r}
+# calculate information loss for frequecy table nuts2 x national
+table_vars <- c("nuts2","national")
+iloss <- infoLoss(data=dat, data_swapped = dat_swapped3,
+                  table_vars = table_vars)
+iloss$measures
+```
+
+Per default the absolute deviation ($abs(x,y)$), relative absolute deviation ($r\_abs(x,y)$), and absolute deviaion of square roots ($abs\_sqr(x,y)$) is calculated between the table cells x and y, see also parameter `metric`.
+
+$$
+abs(x,y) = |x-y| 
+$$
+
+$$
+r\_abs(x,y) = \frac{|x-y|}{x}
+$$
+
+$$
+abs\_sqr(x,y) = |\sqrt{x}-\sqrt{y}|
+$$
+
+It is also possible to supply a custom information loss metric by using paramter `custom_meric`
+
+```{r}
+# define squared distance as custom metric
+squareD <- function(x,y){
+   (x-y)^2
+}
+
+iloss <- infoLoss(data=dat, data_swapped = dat_swapped3,
+                  table_vars = c("nuts2","national"),
+                  custom_metric = list(squareD=squareD))
+iloss$measures # includes custom loss as well
+```
 
 

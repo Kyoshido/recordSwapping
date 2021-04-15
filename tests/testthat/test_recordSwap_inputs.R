@@ -8,7 +8,7 @@ library(recordSwapping)
 seed <- 2021
 set.seed(seed)
 nhid <- 5000
-dat <- recordSwapping:::create.dat( nhid )
+dat <- recordSwapping::createDat( nhid )
 
 k_anonymity <- 0
 swaprate <- .05
@@ -185,7 +185,7 @@ test_that("test para - data, hid, hierarchy, similar, risk_variables, carry_alon
                             similar = similar, swaprate = swaprate,
                             k_anonymity = k_anonymity,
                             risk_variables = risk_variables,
-                            carry_along = c("lau1"),
+                            carry_along = c("lau2"),
                             return_swapped_id = TRUE,
                             seed=seed),NA)
   

@@ -8,7 +8,7 @@ library(recordSwapping)
 seed <- 2021
 set.seed(seed)
 nhid <- 10000
-dat <- recordSwapping:::create.dat( nhid )
+dat <- recordSwapping::createDat( nhid )
 
 k_anonymity <- 0
 swaprate <- .05
@@ -81,7 +81,7 @@ test_that("test number of swapped households",{
 })
 
 test_that("test carry along output",{
-  carry_along <- c("lau1", "lau2")
+  carry_along <- c("lau2")
   dat_s <- recordSwap(data = dat, hid = hid, hierarchy = hier,
                       similar = similar, swaprate = swaprate,
                       k_anonymity = k_anonymity,

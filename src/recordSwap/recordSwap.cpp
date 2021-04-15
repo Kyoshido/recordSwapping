@@ -1,6 +1,6 @@
 /*
  * Algorithm for targeted record swapping
- * Version: 0.3.2
+ * Version: 0.3.3
  */
 
 #include <iostream>     
@@ -65,7 +65,7 @@ std::vector<int> setLevels(std::vector< std::vector<double> > &risk, double risk
   
   for(int i=0;i<n;i++){
     for(int j=0; j<p; j++){
-      if(risk[i][j]>=risk_threshold){
+      if(risk[i][j]>=risk_threshold){ // risk[i][j]>risk_threshold
         data_level[i] = j;
         break;
       }

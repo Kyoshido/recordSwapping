@@ -20,7 +20,7 @@ recordSwap(
 )
 }
 \arguments{
-\item{data}{micro data set containing only integer values, must be either `data.table` or `data.frame`.}
+\item{data}{micro data set must be either a `data.table` or `data.frame`.}
 
 \item{hid}{column index or column name in `data` which refers to the household identifier.}
 
@@ -62,11 +62,11 @@ Applies targeted record swapping on micro data considering the identification ri
 The procedure accepts a `data.frame` or `data.table` containing all necessary information for the record swapping, e.g parameter `hid`, `similar`, `hierarchy`, ect... \cr 
 First the micro data in `data` is ordered by `hid` and the identification risk is calculated for each record in each hierarchy level. As of right now only counts is used as 
 identification risk and the inverse of counts is used as sampling probability.\cr
-NOTE: It will be possible to supply an identification risk for each user and hierarchy level which will be passed down to the C++-function. This is however not fully implemented.
+NOTE: It will be possible to supply an identification risk for each record and hierarchy level which will be passed down to the C++-function. This is however not fully implemented.
 \cr
 \cr 
-With the parameter `k_anonymity` a k-anonymity rule is applied to define risky households in each hierarchy level. A household is set to risky if counts <= k_anonymity in any hierarchy level and the household needs to be swapped across this hierarchy level.
-For instance having a geographic hierarchy of county > municipality > district the counts are calculated for each geographic variable and defined `risk_variables`. If the counts for a record falls below `k_anonymity` for hierachy county then this record
+With the parameter `k_anonymity` a k-anonymity rule is applied to define risky households in each hierarchy level. A household is set to risky if counts < k_anonymity in any hierarchy level and the household needs to be swapped across this hierarchy level.
+For instance having a geographic hierarchy of NUTS1 > NUTS2 > NUTS3 the counts are calculated for each geographic variable and defined `risk_variables`. If the counts for a record falls below `k_anonymity` for hierachy county then this record
 needs to be swapped across counties.\cr
 Setting `k_anonymity = 0` disables this feature and no risky households are defined.
 \cr 
@@ -80,7 +80,7 @@ At the lowest hierarchy level in every geographic area the set of records to be 
 that the proportion of swapped records of the geographic area is in coherence with the `swaprate`. If, due to the k-anonymity condition, more records have already been swapped in this geographic area then only the 
 records which do not fulfil the k-anonymity are swapped.
 \cr
-Using the parameter `similar` one can define similarity profiles. `similar` needs to be a list of vectors with each list entry containing column indices of `data`. These entries are be used when searching for donor households,
+Using the parameter `similar` one can define similarity profiles. `similar` needs to be a list of vectors with each list entry containing column indices of `data`. These entries are used when searching for donor households,
 meaning that for a specific record the set of all donor records is made out of records which have the same values in `similar[[1]]`. IMPORTANT: These can only be household variables
 \cr
 If no suitable donor can be found the next similarity profile is used, `similar[[2]]` and
@@ -89,4 +89,47 @@ the set of all donors is then made up out of all records which have the samle va
 `swaprate` sets the swaprate of households to be swapped, where a single swap counts for swapping 2 households, the sampled household and the corresponding donor.
 Prior to the procedure the swaprate is applied on the lowest hierarchy level, to determine the target number of swapped households in each of the lowest hierarchies. If the target numbers of a decimal point they will randomly be 
 rounded up or down such that the number of households swapped in total is in coherence to the swaprate.
+}
+\examples{
+ 
+# generate 10000 dummy households
+seed <- 2021
+set.seed(seed)
+nhid <- 10000
+dat <- recordSwapping::createDat( nhid )
+
+# define paramters for swapping
+k_anonymity <- 1
+swaprate <- .05
+similar <- list(c("hsize"))
+hier <- c("nuts1","nuts2")
+risk_variables <- c("ageGroup","national")
+hid <- "hid"
+
+# apply record swapping
+dat_s <- recordSwap(data = dat, hid = hid, hierarchy = hier,
+                    similar = similar, swaprate = swaprate,
+                    k_anonymity = k_anonymity,
+                    risk_variables = risk_variables,
+                    carry_along = NULL,
+                    return_swapped_id = TRUE,
+                    seed=seed)
+
+# number of swapped households
+dat_s[hid!=hid_swapped,uniqueN(hid)]
+
+# hierarchies are not consistently swapped
+dat_s[hid!=hid_swapped,.(nuts1,nuts2,nuts3,lau2)]
+
+# use parameter carry_along
+dat_s <- recordSwap(data = dat, hid = hid, hierarchy = hier,
+                    similar = similar, swaprate = swaprate,
+                    k_anonymity = k_anonymity,
+                    risk_variables = risk_variables,
+                    carry_along = c("nuts3","lau2"),
+                    return_swapped_id = TRUE,
+                    seed=seed)
+
+dat_s[hid!=hid_swapped,.(nuts1,nuts2,nuts3,lau2)]
+
 }

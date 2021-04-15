@@ -26,6 +26,8 @@ recordSwap_cpp(
 
 \item{hierarchy}{column indices of variables in \code{data} which refere to the geographic hierarchy in the micro data set. For instance county > municipality > district.}
 
+\item{similar_cpp}{List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.}
+
 \item{swaprate}{double between 0 and 1 defining the proportion of households which should be swapped, see details for more explanations}
 
 \item{risk}{vector of vectors containing risks of each individual in each hierarchy level.}
@@ -41,8 +43,6 @@ These variables do not interfere with the procedure of finding a record to swap 
 This parameter is only used at the end of the procedure when swapping the hierarchies.}
 
 \item{seed}{integer defining the seed for the random number generator, for reproducability.}
-
-\item{similar}{List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.}
 }
 \value{
 Returns data set with swapped records.

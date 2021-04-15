@@ -1,7 +1,7 @@
 Package: recordSwapping
 Type: Package
 Title: Record Swapping
-Version: 0.3.1
+Version: 0.3.3
 Date: 2020-06-25
 Authors@R: c(
   person("Johannes", "Gussenbauer", email="Johannes.Gussenbauer@statistik.gv.at", role = c("aut", "cre")),
@@ -13,7 +13,7 @@ LazyData: TRUE
 ByteCompile: TRUE
 LinkingTo: Rcpp
 Depends:
-    R (>= 3.4),data.table
+    R (>= 3.4),data.table,knitr
 Suggests:
     testthat,microbenchmark,wrswoR
 Imports:

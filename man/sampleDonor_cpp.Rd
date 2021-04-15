@@ -17,6 +17,8 @@ sampleDonor_cpp(
 \arguments{
 \item{data}{micro data containing the hierarchy levels and household ID}
 
+\item{similar_cpp}{List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.}
+
 \item{hid}{column index in \code{data} which refers to the household identifier.}
 
 \item{IDswap}{vector containing records for which a donor needs to be sampled}
@@ -26,8 +28,6 @@ sampleDonor_cpp(
 \item{prob}{a vector of probability weights for obtaining the elements of the vector being sampled.}
 
 \item{seed}{integer setting the sampling seed}
-
-\item{similar}{List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.}
 }
 \description{
 Randomly select donor records given a probability weight vector. This sampling procedure is implemented differently than \code{\link{randSample_cpp}} to speed up performance of C++-function \code{recordSwap()}.

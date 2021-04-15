@@ -9,7 +9,7 @@
 #' 
 #' @param data micro data set containing only integer values. A data.frame or data.table from R needs to be transposed beforehand so that data.size() ~ number of records - data.[0].size ~ number of varaibles per record.
 #' \strong{NOTE:} \emph{data has to be ordered by hid beforehand.}
-#' @param similar List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.
+#' @param similar_cpp List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.
 #' @param hierarchy column indices of variables in \code{data} which refere to the geographic hierarchy in the micro data set. For instance county > municipality > district.
 #' @param risk_variables column indices of variables in \code{data} which will be considered for estimating the risk.
 #' @param hid column index in \code{data} which refers to the household identifier.
@@ -117,7 +117,7 @@ distributeDraws2_cpp <- function(data, risk, hierarchy, hid, swaprate, seed = 12
 #' \strong{NOTE:} This is an internal function used for testing the C++-function \code{sampleDonor} which is used inside the C++-function \code{recordSwap()}.
 #' 
 #' @param data micro data containing the hierarchy levels and household ID
-#' @param similar List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.
+#' @param similar_cpp List where each entry corresponds to column indices of variables in \code{data} which should be considered when swapping households.
 #' @param hid column index in \code{data} which refers to the household identifier.
 #' @param IDswap vector containing records for which a donor needs to be sampled
 #' @param IDswap_pool_vec set from which `IDswap` was drawn

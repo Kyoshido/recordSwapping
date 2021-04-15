@@ -1,83 +1,78 @@
-% MergeSort-RecursionTree
-% Manuel Kirsch
-\documentclass[a4paper,landscape]{scrartcl}
-\usepackage{fancybox}
+\documentclass{article}
+
+\usepackage[top=1cm, left=.1cm, right =.1cm, bottom = .1cm, paperheight = 10cm, paperwidth = 24cm]{geometry}
 \usepackage{tikz}
-
-\title{MergeSort-RecursionTree}
-\author{Manuel Kirsch}
-\date{}
+\usetikzlibrary{positioning}
 \begin{document}
+\pagestyle{empty}
 
-\ovalbox{
-\begin{tikzpicture}[level/.style={sibling distance=60mm/#1}]
-\node [circle,draw] (z){$n$}
-  child {node [circle,draw] (a) {$\frac{n}{2}$}
-    child {node [circle,draw] (b) {$\frac{n}{2^2}$}
-      child {node {$\vdots$}
-        child {node [circle,draw] (d) {$\frac{n}{2^k}$}}
-        child {node [circle,draw] (e) {$\frac{n}{2^k}$}}
-      } 
-      child {node {$\vdots$}}
-    }
-    child {node [circle,draw] (g) {$\frac{n}{2^2}$}
-      child {node {$\vdots$}}
-      child {node {$\vdots$}}
-    }
-  }
-  child {node [circle,draw] (j) {$\frac{n}{2}$}
-    child {node [circle,draw] (k) {$\frac{n}{2^2}$}
-      child {node {$\vdots$}}
-      child {node {$\vdots$}}
-    }
-  child {node [circle,draw] (l) {$\frac{n}{2^2}$}
-    child {node {$\vdots$}}
-    child {node (c){$\vdots$}
-      child {node [circle,draw] (o) {$\frac{n}{2^k}$}}
-      child {node [circle,draw] (p) {$\frac{n}{2^k}$}
-        child [grow=right] {node (q) {$=$} edge from parent[draw=none]
-          child [grow=right] {node (q) {$O_{k = \lg n}(n)$} edge from parent[draw=none]
-            child [grow=up] {node (r) {$\vdots$} edge from parent[draw=none]
-              child [grow=up] {node (s) {$O_2(n)$} edge from parent[draw=none]
-                child [grow=up] {node (t) {$O_1(n)$} edge from parent[draw=none]
-                  child [grow=up] {node (u) {$O_0(n)$} edge from parent[draw=none]}
-                }
-              }
-            }
-            child [grow=down] {node (v) {$O(n \cdot \lg n)$}edge from parent[draw=none]}
-          }
-        }
-      }
-    }
-  }
-};
-\path (a) -- (j) node [midway] {+};
-\path (b) -- (g) node [midway] {+};
-\path (k) -- (l) node [midway] {+};
-\path (k) -- (g) node [midway] {+};
-\path (d) -- (e) node [midway] {+};
-\path (o) -- (p) node [midway] {+};
-\path (o) -- (e) node (x) [midway] {$\cdots$}
-  child [grow=down] {
-    node (y) {$O\left(\displaystyle\sum_{i = 0}^k 2^i \cdot \frac{n}{2^i}\right)$}
-    edge from parent[draw=none]
-  };
-\path (q) -- (r) node [midway] {+};
-\path (s) -- (r) node [midway] {+};
-\path (s) -- (t) node [midway] {+};
-\path (s) -- (l) node [midway] {=};
-\path (t) -- (u) node [midway] {+};
-\path (z) -- (u) node [midway] {=};
-\path (j) -- (t) node [midway] {=};
-\path (y) -- (x) node [midway] {$\Downarrow$};
-\path (v) -- (y)
-  node (w) [midway] {$O\left(\displaystyle\sum_{i = 0}^k n\right) = O(k \cdot n)$};
-\path (q) -- (v) node [midway] {=};
-\path (e) -- (x) node [midway] {+};
-\path (o) -- (x) node [midway] {+};
-\path (y) -- (w) node [midway] {$=$};
-\path (v) -- (w) node [midway] {$\Leftrightarrow$};
-\path (r) -- (c) node [midway] {$\cdots$};
-\end{tikzpicture}}
+% generate png from pdf in R with 
+% graph <- magick::image_read_pdf("docs/diagram.pdf")
+% magick::image_write(graph, path = "vignette/diagram.png", format = "png")
 
+\center
+\begin{tikzpicture}[draw=black!50,align=center,scale=0.9, transform shape]
+
+ \tikzstyle{region}=[circle, text centered, draw=white, font=\fontsize{15pt}{15pt}\selectfont]
+ \tikzstyle{every pin edge}=[-,shorten <=1pt]
+ 
+ \node (NUTS0) [region] {NUTS0};
+ 
+ \node (NUTS1_0) [region, below of=NUTS0, node distance = 2cm] {};
+ \node (NUTS1_1) [region, left of=NUTS1_0, node distance = 6cm] {5};
+ \node (NUTS1_2) [region, right of=NUTS1_0, node distance = 6cm] {3};
+
+ \node (NUTS1_1_2) [region, below of = NUTS1_1, node distance = 2cm] {10};
+ \node (NUTS1_1_1) [region, left of = NUTS1_1_2, node distance = 4cm] {30};
+ \node (NUTS1_1_3) [region, right of = NUTS1_1_2, node distance = 4cm] {...};
+ 
+ \node (NUTS1_1_2_0) [region, below of = NUTS1_1_2, node distance = 2cm] {};
+ \node (NUTS1_1_2_1) [region, left of = NUTS1_1_2_0, node distance = 1cm] {2 + rest};
+ \node (NUTS1_1_2_2) [region, right of = NUTS1_1_2_0, node distance = 1cm] {...};
+
+ \node (NUTS1_1_1_0) [region, below of = NUTS1_1_1, node distance = 2cm] {};
+ \node (NUTS1_1_1_1) [region, left of = NUTS1_1_1_0, node distance = 1cm] {4 + rest};
+ \node (NUTS1_1_1_2) [region, right of = NUTS1_1_1_0, node distance = 1cm] {...};
+
+ \node (NUTS1_2_2) [region, below of = NUTS1_2, node distance = 2cm] {25};
+ \node (NUTS1_2_1) [region, left of = NUTS1_2_2, node distance = 4cm] {50};
+ \node (NUTS1_2_3) [region, right of = NUTS1_2_2, node distance = 4cm] {...};
+
+ \node (NUTS1_2_2_0) [region, below of = NUTS1_2_2, node distance = 2cm] {};
+ \node (NUTS1_2_2_1) [region, left of = NUTS1_2_2_0, node distance = 1cm] {...};
+ \node (NUTS1_2_2_2) [region, right of = NUTS1_2_2_0, node distance = 1cm] {...};
+
+ \node (NUTS1_2_1_0) [region, below of = NUTS1_2_1, node distance = 2cm] {}; 
+ \node (NUTS1_2_1_1) [region, left of = NUTS1_2_1_0, node distance = 1cm] {...};
+ \node (NUTS1_2_1_2) [region, right of = NUTS1_2_1_0, node distance = 1cm] {...}; 
+ 
+ \node (NUTS2) [region, right of = NUTS1_2_3, node distance = 2.5cm] {NUTS2 regions};
+ \node (NUTS1) [region, above of = NUTS2, node distance = 2cm] {NUTS1 regions};
+ \node (NUTS3) [region, below of = NUTS2, node distance = 2cm] {NUTS3 regions};
+ 
+  
+ \draw [every pin edge] (NUTS0) -- (NUTS1_1);
+ \draw [every pin edge] (NUTS0) -- (NUTS1_2);
+ 
+ \draw [every pin edge] (NUTS1_1) -- (NUTS1_1_1);
+ \draw [every pin edge] (NUTS1_1) -- (NUTS1_1_2);
+ \draw [every pin edge] (NUTS1_1) -- (NUTS1_1_3);
+ 
+ \draw [every pin edge] (NUTS1_2) -- (NUTS1_2_1);
+ \draw [every pin edge] (NUTS1_2) -- (NUTS1_2_2);
+ \draw [every pin edge] (NUTS1_2) -- (NUTS1_2_3);
+ 
+ \draw [every pin edge] (NUTS1_1_1) -- (NUTS1_1_1_1);
+ \draw [every pin edge] (NUTS1_1_1) -- (NUTS1_1_1_2);
+ 
+ \draw [every pin edge] (NUTS1_1_2) -- (NUTS1_1_2_1);
+ \draw [every pin edge] (NUTS1_1_2) -- (NUTS1_1_2_2);
+ 
+ \draw [every pin edge] (NUTS1_2_1) -- (NUTS1_2_1_1);
+ \draw [every pin edge] (NUTS1_2_1) -- (NUTS1_2_1_2);
+ 
+ \draw [every pin edge] (NUTS1_2_2) -- (NUTS1_2_2_1);
+ \draw [every pin edge] (NUTS1_2_2) -- (NUTS1_2_2_2);
+
+\end{tikzpicture}
 \end{document}
