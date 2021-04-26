@@ -1,5 +1,5 @@
 ![Build Status](https://travis-ci.org/sdcTools/recordSwapping.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/sdcTools/recordSwapping/badge.svg?branch=master)](https://coveralls.io/github/sdcTools/sdcMicro?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/sdcTools/recordSwapping/badge.svg?branch=master)](https://coveralls.io/github/sdcTools/recordSwapping?branch=master)
 [![CRAN](http://www.r-pkg.org/badges/version/recordSwapping)](https://CRAN.R-project.org/package=recordSwapping)
 [![Downloads](http://cranlogs.r-pkg.org/badges/recordSwapping)](https://CRAN.R-project.org/package=recordSwapping)
 <!--[![Mentioned in Awesome Official Statistics ](https://awesome.re/mentioned-badge.svg)](http://www.awesomeofficialstatistics.org)-->
@@ -17,7 +17,7 @@ Using an additional top level `R`-functions as well as an `Rcpp` wrapper makes i
 
 ## Versions
 
-Information on the different versions can be found [here](https://github.com/sdcTools/recordSwapping/blob/Improvements/NEWS.md)
+Information on the different versions can be found [here](https://github.com/sdcTools/recordSwapping/blob/master/NEWS.md)
 
 ## Installation
 
@@ -50,9 +50,8 @@ swaprate <- .05 # swaprate of households
 # set k_anonymity <- 0 to deactivate this feature
 k_anonymity <- 3
 
-# first similarity profile: hsize, htype, hincome
-# second similarity profile: hsize
-similar <- c("hsize","htype","hincome")
+# similarity profile: hsize
+similar <- "hsize"
 
 # call recodSwap()
 dat_swapped <- recordSwap(data = dat, hid = hid,
@@ -67,9 +66,10 @@ dat_swapped
 
 ```r
 # multiple similarity profiles
-# additional profile contains only hsize
-similar <- list(similar)
-similar[[2]] <- "hsize"
+# first similarity profile: hsize, htype, hincome
+# second similarity profile: hsize
+similar <- list(c("hsize","htype","hincome"),
+                c("hsize"))
 similar
 
 dat_swapped <- recordSwap(data = dat, hid = hid,

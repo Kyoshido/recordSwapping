@@ -1,6 +1,6 @@
 /*
  * Algorithm for targeted record swapping
- * Version: 0.3.3
+ * Version: 0.4.0
  */
 
 #include <iostream>     
@@ -23,19 +23,19 @@ std::vector< std::vector<int> > orderData(std::vector< std::vector<int> > &data,
   // initialise ordering vector
   std::vector<int> orderVec(data.size());
   std::iota(orderVec.begin(),orderVec.end(),0);
-  
+
   // order this vector by order of data[orderIndex]
   std::sort(orderVec.begin(),orderVec.end(),
             [&](int a, int b) { return data[a][orderIndex] < data[b][orderIndex]; }
   );
-  
+
   // reorder data without copying it
-  for(int i=0;i<orderVec.size();i++){
+  for(std::size_t i = 0;i<orderVec.size();i++){
     // while orderVec[i] is not yet in place 
     // every swap places at least one element in it's proper place
     while(orderVec[i] !=   orderVec[orderVec[i]] ){
-      // swap every "column" of data
-      for(int j=0;j<data[0].size();j++){
+      // swap every "row" of data
+      for(std::size_t j=0;j<data[0].size();j++){
         swap( data[orderVec[i]][j], data[orderVec[orderVec[i]]][j] );
       }
       // then adjust orderVec[i]
@@ -346,7 +346,6 @@ std::map<std::vector<int>,int> distributeDraws2(std::map<std::vector<int>,std::u
   // loop over hierarchy and distribute each entry in numberDraws
   // over the hierarchies vertically
   double helpSum = 0.0;
-  double ratioHelp = 0.0;
   std::vector<int> hl;
 
   for(auto const&x : group_hier){
@@ -482,10 +481,10 @@ std::vector<int> sampleDonor(std::vector< std::vector<int> > &data, std::vector<
   // select donor based on similarity constrains
   // iterate over both unordered sets
   // iterate over IDdonor_pool in reverse order since it is sorted in ascending order by risk
-  for(int i=0; i<IDswap.size();i++){
+  for(std::size_t i=0; i<IDswap.size();i++){
     // find donor for index_samp
     // iterate over similarity profiles
-    for(int profile=0;profile<similar.size();profile++){
+    for(std::size_t profile=0;profile<similar.size();profile++){
       
       // iterate over complete donor set in reverse order
       for( auto it = IDdonor_pool.end();it!=IDdonor_pool.begin(); ){
@@ -499,7 +498,7 @@ std::vector<int> sampleDonor(std::vector< std::vector<int> > &data, std::vector<
           // IDswap[i] is similar to index_donor
           // by using similarity indices of the profile
           similar_true=true;
-          for(int sim=0;sim<similar[profile].size();sim++){
+          for(std::size_t sim=0;sim<similar[profile].size();sim++){
             if(data[IDswap[i]][similar[profile][sim]]!=data[index_donor][similar[profile][sim]]){
               // similarity variables do not match
               // set similar_true=false and break loop
@@ -727,8 +726,8 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
 
     
     /////////////////
-    int sampSize=0;
-    int countUsed=0;
+    // int sampSize=0;
+    // int countUsed=0;
     int countRest=0;
     /////////////////
     // loop over levels of hierarchy
@@ -787,7 +786,7 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
                                             samp_order_donor[h], IDused, hid);
 
         // set Index to used
-        for(int i=0;i<IDdonor.size();i++){
+        for(std::size_t i=0;i<IDdonor.size();i++){
           if(IDdonor[i]>-1){
             IDused[IDdonor[i]]=1;
             IDused[IDswap[i]]=1;

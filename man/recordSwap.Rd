@@ -2,9 +2,15 @@
 % Please edit documentation in R/recordSwap.R
 \name{recordSwap}
 \alias{recordSwap}
+\alias{recordSwap.sdcMicroObj}
+\alias{recordSwap.default}
 \title{Targeted Record Swapping}
 \usage{
-recordSwap(
+recordSwap(data, ...)
+
+\method{recordSwap}{sdcMicroObj}(data, ...)
+
+\method{recordSwap}{default}(
   data,
   hid,
   hierarchy,
@@ -16,11 +22,14 @@ recordSwap(
   risk_variables = NULL,
   carry_along = NULL,
   return_swapped_id = FALSE,
-  seed = NULL
+  seed = NULL,
+  ...
 )
 }
 \arguments{
-\item{data}{micro data set must be either a `data.table` or `data.frame`.}
+\item{data}{must bei either a micro data set in the form of a `data.table` or `data.frame`, or an `sdcObject`, see \link[sdcMicro]{createSdcObj}.}
+
+\item{...}{parameters passed to `recordSwap.default()`}
 
 \item{hid}{column index or column name in `data` which refers to the household identifier.}
 

@@ -264,6 +264,5 @@ test_that("test para - swaprate, k_anonymity, return_swapped_id, seed",{
                           risk_variables = risk_variables,
                           carry_along = NULL,
                           return_swapped_id = TRUE,
-                          seed=c(1:4)),"seed must be a single positive integer!")
+                          seed=c("a","b")),"seed must be a single positive integer!")
 })
-

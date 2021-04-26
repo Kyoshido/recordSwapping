@@ -204,16 +204,16 @@ std::vector< std::vector<int> > distributeDraws_cpp(std::vector< std::vector<int
   std::vector<std::vector<int>> output(draw_group.size(),std::vector<int>(nhier+2));
   int z = 0;
   for(auto const&x : draw_group){
-    std::cout<<"hierarchy:" << " ";
+    // std::cout<<"hierarchy:" << " ";
     for(int j=0;j<(nhier+2);j++){
       if(j<nhier){
-        std::cout<<x.first[j] << " ";
+        // std::cout<<x.first[j] << " ";
         output[z][j] = x.first[j];
       }else if(j==nhier){
-        std::cout<<"\n n1: "<<x.second.first;
+        // std::cout<<"\n n1: "<<x.second.first;
         output[z][j] = x.second.first;
       }else{
-        std::cout<<"\n n2: "<<x.second.second<<"\n";
+        // std::cout<<"\n n2: "<<x.second.second<<"\n";
         output[z][j] = x.second.second;
       }
     }
@@ -260,20 +260,19 @@ std::vector<std::vector<int>> distributeDraws2_cpp(std::vector< std::vector<int>
     nhid++;
     // skip all other household member, only need first one
   }
-  std::cout << "number of households: " << nhid << "\n";
+  // std::cout << "number of households: " << nhid << "\n";
   std::map<std::vector<int>,int> draw_group =  distributeDraws2(group_hier, risk, nhid, swaprate, runif01, mersenne_engine);
   
   
-  // iterate over map to generate output
-  // implementation good enough for testing purposes
   // iterate over map to generate output
   // implementation good enough for testing purposes
   std::vector<std::vector<int>> output(draw_group.size(),std::vector<int>(nhier+1));
   int z = 0;
   for(auto const&x : draw_group){
     //std::cout<<"hierarchy:" << " ";
+    int xn = x.first.size();
     for(int j=0;j<(nhier+1);j++){
-      if(j<nhier & j<x.first.size()){
+      if((j<nhier) & (j<xn)){
         //std::cout<<x.first[j] << " ";
         output[z][j] = x.first[j];
       }else if(j==nhier){
@@ -369,7 +368,7 @@ std::vector<int> distributeRandom_cpp(std::vector<double> inputRatio, int totalD
   
   std::vector<int> help_i(1,0);
   std::map<std::vector<int>,double> ratioDraws;
-  for(int i;i<inputRatio.size();i++){
+  for(std::size_t i;i<inputRatio.size();i++){
     help_i[0] = i;
     ratioDraws[help_i] = inputRatio[i];
   }
@@ -411,8 +410,8 @@ std::vector<double> testLoop_cpp(std::vector<std::vector<int>> inputGroup,  std:
   // std::map<std::vector<int>,double > ratioRisk; // get ratio of numbers to draw in lowest level hierarchy
   std::map<std::vector<int>,double > sumRisk; // sum of Risk in each hierarchy level
   std::map<std::vector<int>,int > unitsHierarchy; // number of units in each hierarchy
-  double sumRatio = 0.0; //help variable for ratio
-  double helpRatio = 0.0; //help variable for ratio
+  // double sumRatio = 0.0; //help variable for ratio
+  // double helpRatio = 0.0; //help variable for ratio
   
   // calcualte sum of risk in each hierarchy level
   std::vector<int> maxIndex(nhier,0); 
@@ -512,7 +511,7 @@ std::vector<int> test_comparator(std::vector<int> x_vec,std::vector<double> prob
   std::exponential_distribution<double> exp_dist(1.0);
   std::mt19937 mersenne_engine;
   mersenne_engine.seed(seed);
-  int N = x.size();
+  // int N = x.size();
   std::vector<int> sampleID(x.begin(),x.end());
 
   // apply prob[i]/exp_dist(mersenne_engine) over whole prob vector

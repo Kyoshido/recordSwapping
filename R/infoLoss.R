@@ -96,6 +96,8 @@ infoLoss <- function(data, data_swapped, table_vars,
                      exclude_zeros = FALSE, only_inner_cells = FALSE){
   
   
+  . <- count_o <- count_s <- noise <- pct <- cnt <- NULL 
+  
   ####################
   # check inputs
   if(!any(class(data) %in% c("data.table","data.frame"))){
@@ -127,7 +129,7 @@ infoLoss <- function(data, data_swapped, table_vars,
         stop("If `custom_metric` is a (named) list each list entry must contain a single function")
       }
       
-      check_fun2 <- sapply(custom_metric,function(z){
+      check_fun2 <- lapply(custom_metric,function(z){
         out <- tryCatch(
           {
             z(1:10,10:1) # check metric using a simple imput
@@ -141,14 +143,14 @@ infoLoss <- function(data, data_swapped, table_vars,
       })
       for(j in seq_along(check_fun2)){
         fun_j <- check_fun2[[j]]
-        if(is(fun_j,"simpleWarning")){
+        if(methods::is(fun_j,"simpleWarning")){
           stop("`custom_metric[[",j,"]]` threw a warning when calling `custom_metric[[",j,"]]`(1:10,10:1): ",fun_j$message)
         }
-        if(is(fun_j,"simpleError")){
+        if(methods::is(fun_j,"simpleError")){
           stop("`custom_metric[[",j,"]]` threw an error when calling `custom_metric[[",j,"]]`(1:10,10:1): ",fun_j$message)
         }
         if(!(is.numeric(fun_j)&&length(fun_j))){
-          stop("Function in `custom_metric[[",j,"`]]` must return a numeric vector of the same length as the input vectors")
+          stop("Function in `custom_metric[[",j,"]]` must return a numeric vector of the same length as the input vectors")
         }
       }
       # set names for custom metric if necessary
@@ -167,7 +169,7 @@ infoLoss <- function(data, data_swapped, table_vars,
   }
     
   if(!is.null(hid)){
-    if(!(is.character(hid) && length(hid)==1 && hid %in% colnames(data) && hid %in% colnames(data_swapped))){
+    if(!all(is.character(hid) & length(hid)==1 & hid %in% colnames(data) & hid %in% colnames(data_swapped))){
       stop("`hid` must be a character vector of length 1 containing a column name in `data` and `data_swapped`")
     }
     
@@ -175,22 +177,22 @@ infoLoss <- function(data, data_swapped, table_vars,
     data_swapped <- unique(data_swapped,by=c(hid))
   }
   
-  if(!(is.numeric(probs) && all(probs%between%c(0,1)))){
+  if(!(is.numeric(probs) & all(probs%between%c(0,1)))){
     stop("`probs` must be a numeric vector with values in [0,1]")
   }
   
-  if(!is.numeric(quantvals)){
-    stop("`quanvals` must be a numeric vector")
+  if(!all(is.numeric(quantvals) & length(quantvals)>1)){
+    stop("`quanvals` must be a numeric vector of length 2 or more")
   }
   if(!is.character(apply_quantvals)){
     stop("`apply_quantvals` must be a character vector containing names of the metric supplied in `metric` or `custom_metric`")
   }
   
-  if(!(is.logical(exclude_zeros) && length(exclude_zeros)==1)){
+  if(!all(is.logical(exclude_zeros) & length(exclude_zeros)==1)){
     stop("`exclude_zeros` must be TRUE or FALSE")
   }
   
-  if(!(is.logical(only_inner_cells) && length(only_inner_cells)==1)){
+  if(!all(is.logical(only_inner_cells) & length(only_inner_cells)==1)){
     stop("`only_inner_cells` must be TRUE or FALSE")
   }
   
@@ -201,7 +203,7 @@ infoLoss <- function(data, data_swapped, table_vars,
     comb_vars <- table_vars
   }else{
     # calculate also all table margins
-    comb_vars <- do.call(c, lapply(seq_along(table_vars), combn, x = table_vars, simplify = FALSE))
+    comb_vars <- do.call(c, lapply(seq_along(table_vars), utils::combn, x = table_vars, simplify = FALSE))
   }
   
   # count variables
@@ -287,7 +289,8 @@ infoLoss <- function(data, data_swapped, table_vars,
 
 # help functions for information loss
 get_dist <- function(x,probs=probs){
-  x_d <- quantile(x,probs=probs)
+  what <- NULL
+  x_d <- stats::quantile(x,probs=probs)
   x_names <- names(x_d)
   x_names[x_names=="0%"] <- "Min"
   x_names[x_names=="50%"] <- "Median"

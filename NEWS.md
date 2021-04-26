@@ -1,3 +1,12 @@
+# recordSwapping 0.4.0
+
+* Made `recordSwap()` an S3 Method, which can also accept an `sdcMicro`-object as input.
+* included unit tests for `recordSwap()` when using `sdcMicro`-objects
+* inlcuded unit tests for `infoLoss()`
+* cleaned up code and unit tests such that `R CMD check` runs without notes, warnings and errors
+* fixed warnings when compiling c++ code like `comparing unsigned integer ...` or `unused variable ...`
+* fixed minor typos in README, help pages and vignettes
+
 # recordSwapping 0.3.3
 
 * included function `infoLoss()` to calculated various information loss measures after `recordSwap()` was applied. Function `infoLoss()` is heavily inspired by function `cellKey::ck_cnt_measures()` but accepts the micro data as input instead of frequency or magnitude counts.
@@ -6,7 +15,7 @@
 
 # recordSwapping 0.3.2
 
-* extended testing suit
+* extended unit tests
 * Argument `data` for R-function `recordSwap()` does no longer need to have only integer values. Only variables needed for underlying C++ function defined through parameter `hid`, `hierarchy`, `risk_variables`, `similar`, `carry_along` need to be integer type.
 
 

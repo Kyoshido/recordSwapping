@@ -1,3 +1,5 @@
+#' @name recordSwap
+#'
 #' @title Targeted Record Swapping
 #' 
 #'  
@@ -34,7 +36,7 @@
 #' Prior to the procedure the swaprate is applied on the lowest hierarchy level, to determine the target number of swapped households in each of the lowest hierarchies. If the target numbers of a decimal point they will randomly be 
 #' rounded up or down such that the number of households swapped in total is in coherence to the swaprate.
 #'  
-#' @param data micro data set must be either a `data.table` or `data.frame`.
+#' @param data must bei either a micro data set in the form of a `data.table` or `data.frame`, or an `sdcObject`, see \link[sdcMicro]{createSdcObj}.
 #' @param hid column index or column name in `data` which refers to the household identifier.
 #' @param hierarchy column indices or column names of variables in `data` which refer to the geographic hierarchy in the micro data set. For instance county > municipality > district.
 #' @param similar vector or list of integer vectors or column names containing similarity profiles, see details for more explanations.
@@ -54,6 +56,7 @@
 #' @param return_swapped_id, boolean if `TRUE` the output includes an additional column showing the `hid` with which a record was swapped with.
 #' The new column will have the name `paste0(hid,"_swapped")`.  
 #' @param seed integer defining the seed for the random number generator, for reproducibility. if `NULL` a random seed will be set using `sample(1e5,1)`.
+#' @param ... parameters passed to `recordSwap.default()`
 #' 
 #' @return `data.table` with swapped records.
 #' 
@@ -98,13 +101,59 @@
 #' 
 #' dat_s[hid!=hid_swapped,.(nuts1,nuts2,nuts3,lau2)]
 #'
-#' @export recordSwap
-recordSwap <- function(data, hid, hierarchy, similar,
+#' @export
+recordSwap <- function(data,...){
+  UseMethod("recordSwap")
+}
+
+#' @rdname recordSwap
+#' @export
+recordSwap.sdcMicroObj <- function(data, ...){
+  
+  hid <- hierarchy <- similar <- similar <- swaprate <-
+  risk <- risk_threshold <- k_anonymity <-  risk_variables <-
+  carry_along <- return_swapped_id <- seed <- NULL
+  
+  ellipsis <- list(...)
+  
+  # get inputs from recordSwap.default
+  rsArgs <- formals(recordSwap.default)
+  rsArgs$data <- rsArgs$`...` <- NULL
+  
+  # gett parameters from ..., sdcObject and default values
+  fun_params <- names(rsArgs)
+  fun_values <- lapply(fun_params,function(z,ell,sdcObj,default){
+    getVar(ell=ell,
+           sdcObj=sdcObj,
+           default=default,variable=z)  
+  },ell=ellipsis,sdcObj=data,default=rsArgs)
+  names(fun_values) <- fun_params
+  expr_values <- paste(fun_params,"<-",paste0("fun_values[['",fun_params,"']]"))
+  eval(parse(text = paste(expr_values)))
+  
+  # get data 
+  data <- data@origData
+  
+  # run record swaping default
+  data <- recordSwap.default(data=data, hid=hid, hierarchy = hierarchy,
+                     similar = similar, swaprate = swaprate, risk = risk,
+                     risk_threshold = risk_threshold, k_anonymity = k_anonymity,
+                     risk_variables = risk_variables, carry_along = carry_along,
+                     return_swapped_id = return_swapped_id,
+                     seed = seed)
+  return(data)
+}
+
+#' @rdname recordSwap
+#' @export
+recordSwap.default <- function(data, hid, hierarchy, similar,
                        swaprate=0.05, risk=NULL, risk_threshold=0,
                        k_anonymity=3, risk_variables=NULL,
                        carry_along = NULL,
                        return_swapped_id = FALSE,
-                       seed = NULL){
+                       seed = NULL, ...){
+  
+  helpVariableforMergingAfterTRS <- . <- NULL
   
   # check data
   if(all(!class(data)%in%c("data.table","data.frame"))){
@@ -152,7 +201,7 @@ recordSwap <- function(data, hid, hierarchy, similar,
   }
   
   # check k_anonymity
-  if(!((!is.null(risk_variables))&&checkInteger(k_anonymity)&&length(k_anonymity)==1&&k_anonymity>=0)){
+  if(!all((!is.null(risk_variables))&checkInteger(k_anonymity)&length(k_anonymity)==1&k_anonymity>=0)){
     stop("k_anonymity must be a positiv single integer!")
   }
   
@@ -164,7 +213,7 @@ recordSwap <- function(data, hid, hierarchy, similar,
   }
 
   # check swaprate
-  if(!(is.numeric(swaprate)&&length(swaprate)==1&&swaprate%between%c(0,1))){
+  if(!all(is.numeric(swaprate)&&length(swaprate)==1&&swaprate%between%c(0,1))){
     stop("swaprate must be a single number between 0 and 1!")
   }
   
@@ -209,10 +258,13 @@ recordSwap <- function(data, hid, hierarchy, similar,
   }
 
   # check seed
-  if(is.null(seed)){
+  # if(is.character(seed)){
+  #   stop("seed must be a single positive integer!")
+  # }
+  if(is.null(seed) | any(is.na(seed))){
     seed <- sample(1e5,1)
   }
-  if(!(seed%%1==0&&length(seed)==1&&seed>0)){
+  if(!(is.numeric(seed)&&length(seed)==1&&seed%%1==0&&seed>0)){
     stop("seed must be a single positive integer!")
   }
 
@@ -226,7 +278,7 @@ recordSwap <- function(data, hid, hierarchy, similar,
   sim_vars <- sort(unique(unlist(similar)))
   original_cols <- unique(c(hid,hierarchy,risk_variables,sim_vars,carry_along))
   select_cols <- unique(c(original_cols+1,ncol(data)))
-  data_sw <- copy(data[,..select_cols])
+  data_sw <- copy(data[,.SD,.SDcols=c(select_cols)])
   cnames_sw <- colnames(data_sw) # save column names for later use
   # remove columns from original data except help variable for merging
   drop_cols <- cnames_sw[-length(cnames_sw)]
@@ -281,7 +333,7 @@ recordSwap <- function(data, hid, hierarchy, similar,
   }
   risk <- numeric(0) # drop this if risk was tested enough
 
-  data_sw <- recordSwap_cpp(data=data_sw, similar=similar, hierarchy=hierarchy,
+  data_sw <- recordSwap_cpp(data=data_sw, similar_cpp=similar, hierarchy=hierarchy,
                          risk_variables=risk_variables, hid=hid, k_anonymity=k_anonymity,
                          swaprate=swaprate,
                          risk_threshold=0, risk=risk,
@@ -356,4 +408,47 @@ checkIndexString <- function(x=NULL,cnames,matchLength=NULL,minLength=NULL){
   # indices start with 0 for c++ routine
   x <- x-1
   return(x)
+}
+
+# helpfunctino to get paramete values from ..., sdcObject and default values
+getVar <- function(ell,sdcObj,default,variable){
+  
+  in_ell <- ell[[variable]]
+  if(variable=="hid"){
+    in_sdcObj <- sdcObj@hhId
+  }else if(variable=="risk_variables"){
+    in_sdcObj <- sdcObj@keyVars
+  }else{
+    in_sdcObj <- sdcObj@options[[variable]]
+  }
+  
+  null_ell <- is.null(in_ell)
+  null_sdcObj <- is.null(in_sdcObj)
+  
+  if(null_ell & null_sdcObj){
+    if(is.symbol(default[[variable]])){
+      if(variable=="risk_variables"){
+        stop("argument `",variable,"` is missing, with no default\n Alternatively one can specifcy `",variable,"` through the parameter `keyVars` in `createSdcObj()`") 
+      }else if(variable=="hid"){
+        stop("argument `",variable,"` is missing, with no default\n Alternatively one can specifcy `",variable,"` through the parameter `hhId` in `createSdcObj()`")
+      }else{
+        stop("argument `",variable,"` is missing, with no default\n Alternatively one can specifcy `",variable,"` through the parameter `options` in `createSdcObj()`")
+      }
+    }else{
+      # set default value for variable
+      take_value <- default[[variable]]
+    }
+  }
+  
+  if(!null_ell & !null_sdcObj){
+    warning("argument `",variable,"` defined in function call and in `data`: taking value from function call")
+    take_value <- in_ell
+  }
+  
+  if(!null_ell){
+    take_value <- in_ell
+  }else if(!null_sdcObj){
+    take_value <- in_sdcObj
+  }
+  return(take_value)
 }

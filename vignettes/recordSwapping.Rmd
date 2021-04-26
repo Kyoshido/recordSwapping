@@ -2,7 +2,7 @@
 title: "Targeted Record Swapping"
 author: "Johannes Gussenbauer"
 date: "`r Sys.Date()`"
-output: bookdown::html_vignette2
+output: html_vignette
 vignette: >
   %\VignetteIndexEntry{recordSwapping}
   %\VignetteEngine{knitr::rmarkdown}

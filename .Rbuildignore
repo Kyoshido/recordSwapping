@@ -11,3 +11,6 @@ src/*.o
 src/*.so
 ^doc$
 ^Meta$
+ToDos.md
+data
+misc
