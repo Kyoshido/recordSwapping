@@ -16,7 +16,6 @@ distributeRandom_cpp(inputRatio, totalDraws, seed)
 \description{
 Distribute `totalDraws` using ratio/probability vector `inputRatio` and randomly round each entry up or down such that the distribution results in an integer vector.
 Returns an integer vector containing the number of units in `totalDraws` distributetd according to proportions in `inputRatio`.
-
 \cr
 \strong{NOTE:} This is an internal function used for testing the C++-function \code{distributeRandom} which is used inside the C++-function \code{recordSwap()}.
 }
