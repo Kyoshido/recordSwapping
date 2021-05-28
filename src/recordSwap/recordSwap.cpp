@@ -12,6 +12,7 @@
 #include <map>
 #include <unordered_set>
 #include <unordered_map>
+#include <fstream>
 #include "recordSwap.h"
 using namespace std;
 
@@ -65,7 +66,7 @@ std::vector<int> setLevels(std::vector< std::vector<double> > &risk, double risk
   
   for(int i=0;i<n;i++){
     for(int j=0; j<p; j++){
-      if(risk[i][j]>=risk_threshold){ // risk[i][j]>risk_threshold
+      if(risk[i][j]>risk_threshold){ // risk[i][j]>risk_threshold
         data_level[i] = j;
         break;
       }
@@ -537,6 +538,8 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
                                            std::vector< std::vector<double> > risk, double risk_threshold,
                                            int k_anonymity, std::vector<int> risk_variables,  
                                            std::vector<int> carry_along,
+                                           int &count_swapped_records,
+                                           int &count_swapped_hid,
                                            int seed = 123456){
   
   // data: data input data.size() ~ number of records - data.[0].size ~ number of varaibles per record
@@ -551,6 +554,7 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
   // risk_variables: column indices in data corresponding to risk variables which will be considered for estimating counts in the population
   // carry_along: swap additional variables in addition to hierarchy variable. These variables do not interfere with the procedure of 
   // finding a record to swap with. This parameter is only used at the end of the procedure when swapping the hierarchies.
+  // count_swapped_records, count_swapped_hid: count number of households and records swapped.
   // seed: integer seed for random number generator
 
   // initialise parameters
@@ -813,6 +817,8 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
     hsize = map_hsize[data[x.first][hid]];
     hsizewith = map_hsize[data[x.second][hid]];
     
+    count_swapped_records = count_swapped_records + hsize + hsizewith; // count how many records are swapped
+    
     // erase elements if they have been used during the procedure
     // donor was not found on highest hierarchy
     // but donor was found on lowest...
@@ -836,11 +842,21 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
     }
   }
   
-  // if(IDnotUsed.size()==0){
-  //    cout<<"Recordswapping was successful!"<<endl;
-  // }else{
-  //    cout<<"Donor household was not found in "<<IDnotUsed.size()<<" cases."<<endl;
-  // }
+  // save number of swaped hids 
+  count_swapped_hid = swappedIndex.size()*2;
+  
+  if(IDnotUsed.size()==0){
+    cout<<"Recordswapping was successful!"<<endl;
+  }else{
+    cout<<"Donor household was not found in "<<IDnotUsed.size()<<" cases.\nSee log.txt for a detailed list"<<endl;
+    
+    FILE* pFile = fopen("logFile.txt", "w");
+    fprintf(pFile, "Household IDs for which a suitable donor for swapping was not found\n -------------------------------------------\n");
+    for(auto const&x : IDnotUsed){
+      fprintf(pFile, " %u\n",x);
+    }
+    fclose(pFile);
+  }
   
   return data;
   

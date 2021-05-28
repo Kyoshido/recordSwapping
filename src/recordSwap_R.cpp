@@ -47,16 +47,21 @@ std::vector< std::vector<int> > recordSwap_cpp(std::vector< std::vector<int> > d
       similar[i].push_back(sublist[j]);
     }
   }
- 
-    
-   // call recrodSwap()
+  
+  int count_swapped_hid = 0;
+  int count_swapped_records = 0;
+  
+  // call recrodSwap()
   std::vector< std::vector<int> > output = recordSwap(data, hid,
                                                       hierarchy, similar,
                                                       swaprate,
                                                       risk, risk_threshold,
                                                       k_anonymity, risk_variables,  
                                                       carry_along,
+                                                      count_swapped_records = count_swapped_records,
+                                                      count_swapped_hid = count_swapped_hid,
                                                       seed);
+  
   return output;
 }
 
@@ -532,6 +537,4 @@ std::vector<int> test_comparator(std::vector<int> x_vec,std::vector<double> prob
   sampleID.resize(n);
   return sampleID;
 }
-
-
 
