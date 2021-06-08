@@ -1,7 +1,8 @@
 # recordSwapping 1.0.0
 
 * included parameters `int &count_swapped_records` and `int &count_swapped_hid` `std::string log_file_name` to the cpp-function `recordSwap()` which count the number of swapped records and swapped households. These parameters are convenience parameters for mu-Argus.
-* included parameter `std::string log_file_name` and `log_file_name` in the cpp-function `recordSwap()` and R-function `recordSwap()` respectively. 
+* included parameter `std::string log_file_name` and `log_file_name` in the cpp-function `recordSwap()` and R-function `recordSwap()` respectively. Contains path for writing a log file. The log file contains a list of household IDs (`hid`) which could not have been swapped and is only created if any such households exist.
+* Changed definition of parameter `k_anonymity`: now a household is treated as `high-risk-household` if for at least 1 person in the household `counts < k_anonymity`, was previously `counts <= k_anonymity`. This definition is now consistent with parameter `k` of function `sdcMicro::localSuppression()`.
 
 
 # recordSwapping 0.4.0
