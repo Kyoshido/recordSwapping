@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // recordSwap_cpp
-std::vector< std::vector<int> > recordSwap_cpp(std::vector< std::vector<int> > data, int hid, std::vector<int> hierarchy, Rcpp::List similar_cpp, double swaprate, std::vector<std::vector<double>> risk, double risk_threshold, int k_anonymity, std::vector<int> risk_variables, std::vector<int> carry_along, int seed);
-RcppExport SEXP _recordSwapping_recordSwap_cpp(SEXP dataSEXP, SEXP hidSEXP, SEXP hierarchySEXP, SEXP similar_cppSEXP, SEXP swaprateSEXP, SEXP riskSEXP, SEXP risk_thresholdSEXP, SEXP k_anonymitySEXP, SEXP risk_variablesSEXP, SEXP carry_alongSEXP, SEXP seedSEXP) {
+std::vector< std::vector<int> > recordSwap_cpp(std::vector< std::vector<int> > data, int hid, std::vector<int> hierarchy, Rcpp::List similar_cpp, double swaprate, std::vector<std::vector<double>> risk, double risk_threshold, int k_anonymity, std::vector<int> risk_variables, std::vector<int> carry_along, std::string log_file_name, int seed);
+RcppExport SEXP _recordSwapping_recordSwap_cpp(SEXP dataSEXP, SEXP hidSEXP, SEXP hierarchySEXP, SEXP similar_cppSEXP, SEXP swaprateSEXP, SEXP riskSEXP, SEXP risk_thresholdSEXP, SEXP k_anonymitySEXP, SEXP risk_variablesSEXP, SEXP carry_alongSEXP, SEXP log_file_nameSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,8 +21,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type k_anonymity(k_anonymitySEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type risk_variables(risk_variablesSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type carry_along(carry_alongSEXP);
+    Rcpp::traits::input_parameter< std::string >::type log_file_name(log_file_nameSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(recordSwap_cpp(data, hid, hierarchy, similar_cpp, swaprate, risk, risk_threshold, k_anonymity, risk_variables, carry_along, seed));
+    rcpp_result_gen = Rcpp::wrap(recordSwap_cpp(data, hid, hierarchy, similar_cpp, swaprate, risk, risk_threshold, k_anonymity, risk_variables, carry_along, log_file_name, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -184,7 +185,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_recordSwapping_recordSwap_cpp", (DL_FUNC) &_recordSwapping_recordSwap_cpp, 11},
+    {"_recordSwapping_recordSwap_cpp", (DL_FUNC) &_recordSwapping_recordSwap_cpp, 12},
     {"_recordSwapping_setLevels_cpp", (DL_FUNC) &_recordSwapping_setLevels_cpp, 2},
     {"_recordSwapping_orderData_cpp", (DL_FUNC) &_recordSwapping_orderData_cpp, 2},
     {"_recordSwapping_setRisk_cpp", (DL_FUNC) &_recordSwapping_setRisk_cpp, 4},

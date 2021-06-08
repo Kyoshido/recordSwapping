@@ -54,7 +54,8 @@
 #' These variables do not interfere with the procedure of finding a record to swap with or calculating risk.
 #' This parameter is only used at the end of the procedure when swapping the hierarchies.
 #' @param return_swapped_id, boolean if `TRUE` the output includes an additional column showing the `hid` with which a record was swapped with.
-#' The new column will have the name `paste0(hid,"_swapped")`.  
+#' The new column will have the name `paste0(hid,"_swapped")`.
+#' @param log_file_name character, path for writing a log file. The log file contains a list of household IDs (`hid`) which could not have been swapped and is only created if any such households exist.    
 #' @param seed integer defining the seed for the random number generator, for reproducibility. if `NULL` a random seed will be set using `sample(1e5,1)`.
 #' @param ... parameters passed to `recordSwap.default()`
 #' 
@@ -112,7 +113,7 @@ recordSwap.sdcMicroObj <- function(data, ...){
   
   hid <- hierarchy <- similar <- similar <- swaprate <-
   risk <- risk_threshold <- k_anonymity <-  risk_variables <-
-  carry_along <- return_swapped_id <- seed <- NULL
+  carry_along <- return_swapped_id <- seed <- log_file_name <- NULL
   
   ellipsis <- list(...)
   
@@ -140,6 +141,7 @@ recordSwap.sdcMicroObj <- function(data, ...){
                      risk_threshold = risk_threshold, k_anonymity = k_anonymity,
                      risk_variables = risk_variables, carry_along = carry_along,
                      return_swapped_id = return_swapped_id,
+                     log_file_name = log_file_name,
                      seed = seed)
   return(data)
 }
@@ -151,6 +153,7 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
                        k_anonymity=3, risk_variables=NULL,
                        carry_along = NULL,
                        return_swapped_id = FALSE,
+                       log_file_name = "TRS_logfile.txt",
                        seed = NULL, ...){
   
   helpVariableforMergingAfterTRS <- . <- NULL
@@ -338,6 +341,7 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
                          swaprate=swaprate,
                          risk_threshold=0, risk=risk,
                          carry_along = carry_along,
+                         log_file_name = log_file_name,
                          seed=seed)
   setDT(data_sw)
   data_sw <- transpose(data_sw)

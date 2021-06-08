@@ -26,6 +26,7 @@ using namespace Rcpp;
 //' @param carry_along integer vector indicating additional variables to swap besides to hierarchy variables.
 //' These variables do not interfere with the procedure of finding a record to swap with or calculating risk.
 //' This parameter is only used at the end of the procedure when swapping the hierarchies.
+//' @param log_file_name character, path for writing a log file. The log file contains a list of household IDs (`hid`) which could not have been swapped and is only created if any such households exist.    
 //' @param seed integer defining the seed for the random number generator, for reproducability.
 //' 
 //' @return Returns data set with swapped records.
@@ -36,6 +37,7 @@ std::vector< std::vector<int> > recordSwap_cpp(std::vector< std::vector<int> > d
                                                std::vector<std::vector<double>> risk, double risk_threshold,
                                                int k_anonymity, std::vector<int> risk_variables,
                                                std::vector<int> carry_along,
+                                               std::string log_file_name,
                                                int seed = 123456){
   // prep inputs for the call to recordSwap()
   // some formats can not directly be transformed to stl-containers
@@ -60,6 +62,7 @@ std::vector< std::vector<int> > recordSwap_cpp(std::vector< std::vector<int> > d
                                                       carry_along,
                                                       count_swapped_records = count_swapped_records,
                                                       count_swapped_hid = count_swapped_hid,
+                                                      log_file_name = log_file_name,
                                                       seed);
   
   return output;
