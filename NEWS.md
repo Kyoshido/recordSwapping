@@ -1,3 +1,9 @@
+# recordSwapping 1.0.0
+
+* included parameters `int &count_swapped_records` and `int &count_swapped_hid` `std::string log_file_name` to the cpp-function `recordSwap()` which count the number of swapped records and swapped households. These parameters are convenience parameters for mu-Argus.
+* included parameter `std::string log_file_name` and `log_file_name` in the cpp-function `recordSwap()` and R-function `recordSwap()` respectively. 
+
+
 # recordSwapping 0.4.0
 
 * Made `recordSwap()` an S3 Method, which can also accept an `sdcMicro`-object as input.

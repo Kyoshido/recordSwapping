@@ -20,11 +20,12 @@
 #' @param carry_along integer vector indicating additional variables to swap besides to hierarchy variables.
 #' These variables do not interfere with the procedure of finding a record to swap with or calculating risk.
 #' This parameter is only used at the end of the procedure when swapping the hierarchies.
+#' @param log_file_name character, path for writing a log file. The log file contains a list of household IDs (`hid`) which could not have been swapped and is only created if any such households exist.    
 #' @param seed integer defining the seed for the random number generator, for reproducability.
 #' 
 #' @return Returns data set with swapped records.
-recordSwap_cpp <- function(data, hid, hierarchy, similar_cpp, swaprate, risk, risk_threshold, k_anonymity, risk_variables, carry_along, seed = 123456L) {
-    .Call(`_recordSwapping_recordSwap_cpp`, data, hid, hierarchy, similar_cpp, swaprate, risk, risk_threshold, k_anonymity, risk_variables, carry_along, seed)
+recordSwap_cpp <- function(data, hid, hierarchy, similar_cpp, swaprate, risk, risk_threshold, k_anonymity, risk_variables, carry_along, log_file_name, seed = 123456L) {
+    .Call(`_recordSwapping_recordSwap_cpp`, data, hid, hierarchy, similar_cpp, swaprate, risk, risk_threshold, k_anonymity, risk_variables, carry_along, log_file_name, seed)
 }
 
 #' @title Define Swap-Levels

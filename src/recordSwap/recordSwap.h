@@ -13,14 +13,14 @@
  */
 
 /*
- * Version: 0.3.2
+ * Version: 1.0.0
  */
 
 /* 
-* Header file for shared library recordSwap.dll
-* with source code recordSwap.cpp
-* to perform Targeted Record Swapping
-*/
+ * Header file for shared library recordSwap.dll
+ * with source code recordSwap.cpp
+ * to perform Targeted Record Swapping
+ */
 #include <iostream>     
 #include <algorithm>    // std::count
 #include <vector>       // std::vector
@@ -38,8 +38,8 @@
 //{
 //public:
 /*
-* Function to perform record swapping
-*/
+ * Function to perform record swapping
+ */
 std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data, int hid,
                                            std::vector<int> hierarchy, 
                                            std::vector< std::vector<int> > similar,
@@ -47,17 +47,21 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
                                            std::vector< std::vector<double> > risk, double risk_threshold,
                                            int k_anonymity, std::vector<int> risk_variables,  
                                            std::vector<int> carry_along,
-                                           int seed);
+                                           int &count_swapped_records,
+                                           int &count_swapped_hid,
+                                           std::string log_file_name,
+                                           int seed
+);
 
 //private:
 /*
-* Function to reorder data-set given one index vector 
-*/
+ * Function to reorder data-set given one index vector 
+ */
 std::vector< std::vector<int> > orderData(std::vector< std::vector<int> > &data, int orderIndex);
 
 /*
-* Function to define levels 
-*/
+ * Function to define levels 
+ */
 std::vector<int> setLevels(std::vector< std::vector<double> > &risk, double risk_threshold);
 
 /*
@@ -80,13 +84,13 @@ std::vector<int> randSample(std::unordered_set<int> &ID, int N, std::vector<doub
 std::vector<int> sampleDonor(std::vector< std::vector<int> > &data, std::vector<std::vector<int>> &similar,
                              std::vector<int> &IDswap, std::unordered_set<int> &IDswap_pool,
                              std::map<double,int> &IDdonor_pool, std::vector<int> &IDused, int &hid);
-  
+
 /* 
  * help function to randomly distribute number of units to draw from
  */
 std::map<std::vector<int>,int> distributeRandom(std::map<std::vector<int>,double> &ratioDraws, int &totalDraws,
                                                 std::mt19937 &mersenne_engine);
-  
+
 /*
  * Function to distribute n draws over a given number of groups
  * the distribution is always proportional to group size
@@ -95,5 +99,5 @@ std::map<std::vector<int>,std::pair<int,int>> distributeDraws(std::map<std::vect
                                                               int &nhid, double &swaprate,
                                                               std::uniform_int_distribution<std::mt19937::result_type> &runif01,
                                                               std::mt19937 &mersenne_engine);
-  
+
 #endif /* __RECORDSWAP_H__ */

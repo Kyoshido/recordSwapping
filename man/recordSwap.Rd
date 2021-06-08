@@ -22,6 +22,7 @@ recordSwap(data, ...)
   risk_variables = NULL,
   carry_along = NULL,
   return_swapped_id = FALSE,
+  log_file_name = "TRS_logfile.txt",
   seed = NULL,
   ...
 )
@@ -58,6 +59,8 @@ This parameter is only used at the end of the procedure when swapping the hierar
 
 \item{return_swapped_id, }{boolean if `TRUE` the output includes an additional column showing the `hid` with which a record was swapped with.
 The new column will have the name `paste0(hid,"_swapped")`.}
+
+\item{log_file_name}{character, path for writing a log file. The log file contains a list of household IDs (`hid`) which could not have been swapped and is only created if any such households exist.}
 
 \item{seed}{integer defining the seed for the random number generator, for reproducibility. if `NULL` a random seed will be set using `sample(1e5,1)`.}
 }
