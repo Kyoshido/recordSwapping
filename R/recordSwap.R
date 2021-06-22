@@ -186,7 +186,7 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
   
   # check carry_along
   carry_along <- checkIndexString(carry_along,cnames,minLength = 0)
-  
+  carry_along <- carry_along[!carry_along%in%hierarchy] # otherwise they are swapped twice
   # check return_swapped_id and use with carry_along if TRUE
   if(!is.logical(return_swapped_id) | length(return_swapped_id)!=1){
     stop("return_swapped_id must be logical of length 1")

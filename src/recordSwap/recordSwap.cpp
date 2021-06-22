@@ -1,6 +1,6 @@
 /*
  * Algorithm for targeted record swapping
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 
 #include <iostream>     
@@ -719,7 +719,7 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
       // discard every index that has already been used
       // more efficient to do this at this step then later on in the code
       for(auto s : x.second){
-        if(IDused[s]==0){
+        if(IDused[s]==0 && IDnotUsed.find(s)==IDnotUsed.end()){
           group_hier_help[hier_help].insert(s);
         }else if(swappedIndex.find(s) != swappedIndex.end()){
           // count how many IDs were already swapped inside this hierarchy
@@ -824,8 +824,8 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
     // erase elements if they have been used during the procedure
     // donor was not found on highest hierarchy
     // but donor was found on lowest...this might actually be a bug...
-    IDnotUsed.erase(x.first);
-    IDnotUsed.erase(x.second);
+    // IDnotUsed.erase(x.first);
+    // IDnotUsed.erase(x.second);
     
     // loop over variables to swapp
     for(int j=0;j<nvalues;j++){
@@ -855,7 +855,7 @@ std::vector< std::vector<int> > recordSwap(std::vector< std::vector<int> > data,
     FILE* pFile = fopen(log_file_name.c_str(), "w");
     fprintf(pFile, "%lu household IDs for which a suitable donor for swapping was not found\n -------------------------------------------\n",IDnotUsed.size());
     for(auto const&x : IDnotUsed){
-      fprintf(pFile, " %u\n",x);
+      fprintf(pFile, " %u\n",data[x][hid]);
     }
     fclose(pFile);
   }

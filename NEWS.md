@@ -1,3 +1,7 @@
+# recordSwapping 1.0.1
+
+* fix bug when producing the log file.
+
 # recordSwapping 1.0.0
 
 * included parameters `int &count_swapped_records` and `int &count_swapped_hid` `std::string log_file_name` to the cpp-function `recordSwap()` which count the number of swapped records and swapped households. These parameters are convenience parameters for mu-Argus.
