@@ -1,6 +1,7 @@
 # recordSwapping 1.0.1
 
 * fix bug when producing the log file.
+* If a household has no suitable donor household once, then this household is discarded from swapping for all subsequent swaps in all other geographic hierarchies. Otherwise households which are `at-risk` and have on suitable donor at a specific geographic hierarchy can be swapped in lower geographic hierarchies. This leads to the household beeing swapped but the swap does not account for the `at-risk` issue. 
 
 # recordSwapping 1.0.0
 
