@@ -317,6 +317,12 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
     stop("Columns specified in hid, hierarchy, similar and carry_along must contain only integer values at this point")
   }
   
+  # check if any values with NA values are present in data
+  NAOccured <- apply(data_sw,2,function(z){any(is.na(z))})
+  if(any(NAOccured)){
+    stop("data must contain only integer values. \nColumn(s)\n    ",paste( names(which(NAOccured)),collapse=", "),"\ncontain(s) NA values")
+  }
+  
   # check if any values with decimal values are present in data
   decOccured <- apply(data_sw,2,function(z){any((z%%1)!=0)})
   if(any(decOccured)){
