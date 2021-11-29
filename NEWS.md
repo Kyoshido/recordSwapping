@@ -1,7 +1,8 @@
 # recordSwapping 1.0.1
 
 * fix bug when producing the log file.
-* If a household has no suitable donor household once, then this household is discarded from swapping for all subsequent swaps in all other geographic hierarchies. Otherwise households which are `at-risk` and have on suitable donor at a specific geographic hierarchy can be swapped in lower geographic hierarchies. This leads to the household beeing swapped but the swap does not account for the `at-risk` issue. 
+* If a household has no suitable donor household once, then this household is discarded from swapping for all subsequent swaps in all other geographic hierarchies. Otherwise households which are `at-risk` and have no suitable donor at a specific geographic hierarchy can be swapped in lower geographic hierarchies. This leads to the household being swapped but the swap does not account for the `at-risk` issue.
+* Thanks @Kyoshido for PR (4dfb068)[https://github.com/sdcTools/recordSwapping/pull/9/commits/4dfb068e3b6539b752fd015e231a87c2f895337a] and (67093f7)[https://github.com/sdcTools/recordSwapping/pull/8/commits/67093f7361748c0b8d72cbf2ac92111d6ec8c512]
 
 # recordSwapping 1.0.0
 
@@ -14,7 +15,7 @@
 
 * Made `recordSwap()` an S3 Method, which can also accept an `sdcMicro`-object as input.
 * included unit tests for `recordSwap()` when using `sdcMicro`-objects
-* inlcuded unit tests for `infoLoss()`
+* included unit tests for `infoLoss()`
 * cleaned up code and unit tests such that `R CMD check` runs without notes, warnings and errors
 * fixed warnings when compiling c++ code like `comparing unsigned integer ...` or `unused variable ...`
 * fixed minor typos in README, help pages and vignettes
@@ -33,7 +34,7 @@
 
 # recordSwapping 0.3.1
 
-* Fixed bug where less than households than indicated through the swaprate were drawn
+* Fixed bug where less households than indicated through the swaprate were drawn
 * added version number to header file
 * developed different method for distributing number of draws over all geographic hierarchies
 
