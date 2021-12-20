@@ -2,7 +2,8 @@
 
 * fix bug when producing the log file.
 * If a household has no suitable donor household once, then this household is discarded from swapping for all subsequent swaps in all other geographic hierarchies. Otherwise households which are `at-risk` and have no suitable donor at a specific geographic hierarchy can be swapped in lower geographic hierarchies. This leads to the household being swapped but the swap does not account for the `at-risk` issue.
-* Thanks @Kyoshido for PR (4dfb068)[https://github.com/sdcTools/recordSwapping/pull/9/commits/4dfb068e3b6539b752fd015e231a87c2f895337a] and (67093f7)[https://github.com/sdcTools/recordSwapping/pull/8/commits/67093f7361748c0b8d72cbf2ac92111d6ec8c512]
+* Improved inputs checks for `recordSwap()`, thanks @Kyoshido for PR [67093f7](https://github.com/sdcTools/recordSwapping/pull/8/commits/67093f7361748c0b8d72cbf2ac92111d6ec8c512)
+* Corrected spelling on vignette and documentation, thanks @Kyoshido for PR [4dfb068](https://github.com/sdcTools/recordSwapping/pull/9/commits/4dfb068e3b6539b752fd015e231a87c2f895337a) 
 
 # recordSwapping 1.0.0
 
