@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // recordSwap_cpp
 std::vector< std::vector<int> > recordSwap_cpp(std::vector< std::vector<int> > data, int hid, std::vector<int> hierarchy, Rcpp::List similar_cpp, double swaprate, std::vector<std::vector<double>> risk, double risk_threshold, int k_anonymity, std::vector<int> risk_variables, std::vector<int> carry_along, std::string log_file_name, int seed);
 RcppExport SEXP _recordSwapping_recordSwap_cpp(SEXP dataSEXP, SEXP hidSEXP, SEXP hierarchySEXP, SEXP similar_cppSEXP, SEXP swaprateSEXP, SEXP riskSEXP, SEXP risk_thresholdSEXP, SEXP k_anonymitySEXP, SEXP risk_variablesSEXP, SEXP carry_alongSEXP, SEXP log_file_nameSEXP, SEXP seedSEXP) {

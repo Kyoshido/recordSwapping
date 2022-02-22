@@ -40,7 +40,7 @@ recordSwap(data, ...)
 
 \item{swaprate}{double between 0 and 1 defining the proportion of households which should be swapped, see details for more explanations}
 
-\item{risk}{either column indices or column names in `data` or `data.table`, `data.frame` or `matrix` indicating risk of each record at each hierarchy level. If `risk`-matrix is supplied to swapping procedure will
+\item{risk}{either column indices or column names in `data` or `data.table`, `data.frame` or `matrix` indicating risk of each record at each hierarchy level. If `risk`-matrix is supplied the swapping procedure will
 not use the k-anonymity rule but the values found in this matrix for swapping.
 ATTENTION: This is NOT fully implemented yet and currently ignored by the underlying c++ functions until tested properly}
 

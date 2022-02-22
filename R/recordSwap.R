@@ -41,7 +41,7 @@
 #' @param hierarchy column indices or column names of variables in `data` which refer to the geographic hierarchy in the micro data set. For instance county > municipality > district.
 #' @param similar vector or list of integer vectors or column names containing similarity profiles, see details for more explanations.
 #' @param swaprate double between 0 and 1 defining the proportion of households which should be swapped, see details for more explanations
-#' @param risk either column indices or column names in `data` or `data.table`, `data.frame` or `matrix` indicating risk of each record at each hierarchy level. If `risk`-matrix is supplied to swapping procedure will
+#' @param risk either column indices or column names in `data` or `data.table`, `data.frame` or `matrix` indicating risk of each record at each hierarchy level. If `risk`-matrix is supplied the swapping procedure will
 #' not use the k-anonymity rule but the values found in this matrix for swapping.
 #' ATTENTION: This is NOT fully implemented yet and currently ignored by the underlying c++ functions until tested properly
 #' @param risk_threshold single numeric value indicating when a household is considered "high risk", e.g. when this household must be swapped.
@@ -181,8 +181,55 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
   }
   similar <- lapply(similar,checkIndexString,cnames=cnames,minLength = 1)
   
-  # check risk_variables
-  risk_variables <- checkIndexString(risk_variables,cnames,minLength = 1)
+  # check risk_variables and risk
+  if(is.null(risk)){
+    risk <- data.table()
+    risk_threshold <- 0
+    
+    risk_variables <- checkIndexString(risk_variables,cnames,minLength = 1)
+  }
+  if(is.vector(risk)){
+    if(length(risk)!=length(hierarchy)){
+      stop("risk and hierarchy need to address the same number of columns!")
+    }
+    risk <- checkIndexString(risk,cnames,minLength = 1)
+    risk <- data[,.SD,.SDcols=c(risk+1)]
+    risk_variables <- integer(0)
+  }else{
+    if(all(!class(risk)%in%c("data.table","data.frame","matrix"))){
+      stop("If risk is not a vector containing column indices or column names in data then risk must be either a data.table, data.frame or matrix!")
+    }
+  }
+  
+  if(nrow(risk)>0){
+    if(ncol(risk)!=length(hierarchy)){
+      stop("number of columns in risk does not match number of hierarchies!")
+    }
+  }
+  
+  cnamesrisk <- copy(colnames(risk))
+  setDT(risk)
+  
+  if(nrow(risk)>0){
+    if(is.null(cnamesrisk)){
+      message("risk does not contain column names; the first column in risk will be used for the first hierarchy level, e.g ",cnames[hierarchy[1]+1]," and so on.")
+    }else{
+      if(any(!cnamesrisk%in%cnames)){
+        stop("the columnnames of risk do not appear in data")
+      }
+    }
+    
+    if(any(risk<0)||any(!sapply(risk,is.numeric))){
+      stop("risk must contain positive real values only!")
+    }
+  }
+  
+  # check risk_threshold
+  if(is.null(risk_variables)){
+    if(!(is.numeric(risk_threshold)&&length(risk_threshold)==1&&risk_threshold>=0)){
+      stop("risk_threshold must be a positiv numeric value")
+    }
+  }
   
   # check carry_along
   carry_along <- checkIndexString(carry_along,cnames,minLength = 0)
@@ -207,58 +254,13 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
   if(!all((!is.null(risk_variables))&checkInteger(k_anonymity)&length(k_anonymity)==1&k_anonymity>=0)){
     stop("k_anonymity must be a positiv single integer!")
   }
-  
-  # check risk_threshold
-  if(is.null(risk_variables)){
-    if(!(is.numeric(risk_threshold)&&length(risk_threshold)==1&&risk_threshold>=0)){
-      stop("risk_threshold must be a positiv numeric value")
-    }
-  }
 
   # check swaprate
   if(!all(is.numeric(swaprate)&&length(swaprate)==1&&swaprate%between%c(0,1))){
     stop("swaprate must be a single number between 0 and 1!")
   }
   
-  # check risk
-  if(is.null(risk)){
-    risk <- data.table()
-    risk_threshold <- 0
-  }
-  if(is.vector(risk)){
-    if(length(risk)!=length(hierarchy)){
-      stop("risk and hierarchy need to address the same number of columns!")
-    }
-    risk <- checkIndexString(risk,cnames,minLength = 1)
-    risk <- data[,c(risk+1)]
-  }else{
-    if(all(!class(risk)%in%c("data.table","data.frame","matrix"))){
-      stop("If risk is not a vector containing column indices or column names in data then risk must be either a data.table, data.frame or matrix!")
-    }
-  }
 
-  if(nrow(risk)>0){
-    if(ncol(risk)!=length(hierarchy)){
-      stop("number of columns in risk does not match number of hierarchies!")
-    }
-  }
-
-  cnamesrisk <- copy(colnames(risk))
-  risk <- data.table(risk)
-  
-  if(nrow(risk)>0){
-    if(is.null(cnamesrisk)){
-      message("risk does not contain column names; the first column in risk will be used for the first hierarchy level, e.g ",cnames[hierarchy[1]+1]," and so on.")
-    }else{
-      if(!any(cnamesrisk)%in%cnames[hierarchy+1]){
-        stop("the columnnames of risk do not appear in data")
-      }
-    }
-    
-    if(any(risk<0)||any(!is.numeric(risk))){
-      stop("risk must contain positive real values only!")
-    }
-  }
 
   # check seed
   # if(is.character(seed)){
@@ -340,15 +342,26 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
   }else{
     risk <- numeric(0)
   }
-  risk <- numeric(0) # drop this if risk was tested enough
+  # risk <- numeric(0) # drop this if risk was tested enough
 
+  # take time before starting swapping
+  start_time <- Sys.time()
+  
   data_sw <- recordSwap_cpp(data=data_sw, similar_cpp=similar, hierarchy=hierarchy,
                          risk_variables=risk_variables, hid=hid, k_anonymity=k_anonymity,
                          swaprate=swaprate,
-                         risk_threshold=0, risk=risk,
+                         risk_threshold=risk_threshold, risk=risk,
                          carry_along = carry_along,
                          log_file_name = log_file_name,
                          seed=seed)
+  
+  # check if swapping was successful
+  if(file.exists(log_file_name) & file.mtime(log_file_name)>start_time){
+    message("Donor household was not found in ",length(readLines(log_file_name))-2," case(s).\nSee ",log_file_name," for a detailed list")
+  }else{
+    message("Recordswapping was successful!\n")
+  }
+  
   setDT(data_sw)
   data_sw <- transpose(data_sw)
   setnames(data_sw,colnames(data_sw),cnames_sw)
