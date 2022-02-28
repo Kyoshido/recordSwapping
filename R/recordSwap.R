@@ -345,8 +345,10 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
   # risk <- numeric(0) # drop this if risk was tested enough
 
   # take time before starting swapping
-  start_time <- Sys.time()
+  # op <- options(digits.secs = 6)
   
+  start_time <-  Sys.time() 
+  # print( start_time ,"\n")
   data_sw <- recordSwap_cpp(data=data_sw, similar_cpp=similar, hierarchy=hierarchy,
                          risk_variables=risk_variables, hid=hid, k_anonymity=k_anonymity,
                          swaprate=swaprate,
@@ -356,11 +358,15 @@ recordSwap.default <- function(data, hid, hierarchy, similar,
                          seed=seed)
   
   # check if swapping was successful
-  if(file.exists(log_file_name) & file.mtime(log_file_name)>start_time){
+  # print(file.mtime(log_file_name),"\n")
+  time_diff_help <- as.numeric(difftime(file.mtime(log_file_name),start_time,units="sec"))
+  # cat("conditions",time_diff_help>-1,"\n")
+  if(file.exists(log_file_name) && time_diff_help>-1){
     message("Donor household was not found in ",length(readLines(log_file_name))-2," case(s).\nSee ",log_file_name," for a detailed list")
   }else{
     message("Recordswapping was successful!\n")
   }
+  # options(op)
   
   setDT(data_sw)
   data_sw <- transpose(data_sw)
