@@ -39,16 +39,16 @@ library(recordSwapping)
 # create some dummy data (~ 50k households)
 dat <- createDat(50000)
 
-# define paramters through column names or column indices
+# define parameters through column names or column indices
 hierarchy <- c("nuts1","nuts2") # c(1,2)
-risk_variables <- c("hszie") # c(7)
-hid <- "hid" # c(6)
+risk_variables <- c("ageGroup") # c(7)
+hid <- "hid" # c(5)
 
-swaprate <- .05 # swaprate of households
+swaprate <- .05 # swapping rate of households
 
-# households are set to risky and are mandatorilly swapped
-# if at least one individual has counts (over risk_variables and hierarhies)
-# smaller eqaul k_anonymity
+# households are set to risky and are mandatorily swapped
+# if at least one individual has counts (over risk_variables and hierarchies)
+# smaller equal k_anonymity
 # set k_anonymity <- 0 to deactivate this feature
 k_anonymity <- 3
 
@@ -56,43 +56,51 @@ k_anonymity <- 3
 similar <- "hsize"
 
 # call recodSwap()
-dat_swapped <- recordSwap(data = dat, hid = hid,
-                          hierarchy = hierarchy,
-                          similar = similar,
-                          risk_variables = risk_variables,
-                          k_anonymity = k_anonymity,
-                          swaprate = swaprate)
+dat_swapped <- recordSwap(
+  data = dat, hid = hid,
+  hierarchy = hierarchy,
+  similar = similar,
+  risk_variables = risk_variables,
+  k_anonymity = k_anonymity,
+  swaprate = swaprate
+)
 dat_swapped
 ```
-
 
 ```r
 # multiple similarity profiles
 # first similarity profile: hsize, htype, hincome
 # second similarity profile: hsize
-similar <- list(c("hsize","htype","hincome"),
-                c("hsize"))
+similar <- list(
+  c("hsize","htype","hincome"),
+  c("hsize")
+)
 similar
 
-dat_swapped <- recordSwap(data = dat, hid = hid,
-                          hierarchy = hierarchy,
-                          similar = similar,
-                          risk_variables = risk_variables,
-                          k_anonymity = k_anonymity,
-                          swaprate = swaprate)
+dat_swapped <- recordSwap(
+  data = dat, 
+  hid = hid,
+  hierarchy = hierarchy,
+  similar = similar,
+  risk_variables = risk_variables,
+  k_anonymity = k_anonymity,
+  swaprate = swaprate
+)
 ```
 
 ```r
 # return ID of swapped household
-dat_swapped <- recordSwap(data = dat, hid = hid,
-                          hierarchy = hierarchy,
-                          similar = similar,
-                          risk_variables = risk_variables,
-                          k_anonymity = k_anonymity,
-                          swaprate = swaprate,
-                          return_swapped_id = TRUE)
+dat_swapped <- recordSwap(
+  data = dat, hid = hid,
+  hierarchy = hierarchy,
+  similar = similar,
+  risk_variables = risk_variables,
+  k_anonymity = k_anonymity,
+  swaprate = swaprate,
+  return_swapped_id = TRUE
+)
                           
-dat_swapped[,.(hid,hid_swapped,nuts1,nuts2,nuts3)]
+dat_swapped[, .(hid, hid_swapped, nuts1, nuts2, nuts3)]
 ```
 
 More detailed information can be found through the help-pages (`?recordSwap`) or when calling the vignette
