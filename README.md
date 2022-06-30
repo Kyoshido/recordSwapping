@@ -35,7 +35,7 @@ The procedure can be applied as follows
 library(recordSwapping)
 
 # create some dummy data (~ 50k households)
-dat <- create.dat(50000)
+dat <- createDat(50000)
 
 # define paramters through column names or column indices
 hierarchy <- c("nuts1","nuts2") # c(1,2)
