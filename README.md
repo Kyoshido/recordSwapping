@@ -23,8 +23,10 @@ Information on the different versions can be found [here](https://github.com/sdc
 
 The package can be installed through
 ```r
-library(devtools)
-install_github("sdcTools/recordSwapping")
+devtools::install_github(
+  repo = "sdcTools/recordSwapping", 
+  build_vignettes = TRUE
+)
 ```
 
 ## Application
