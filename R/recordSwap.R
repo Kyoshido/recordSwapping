@@ -30,7 +30,7 @@
 #' meaning that for a specific record the set of all donor records is made out of records which have the same values in `similar[[1]]`. IMPORTANT: These can only be household variables
 #' \cr
 #' If no suitable donor can be found the next similarity profile is used, `similar[[2]]` and
-#' the set of all donors is then made up out of all records which have the samle values in the column indices in `similar[[2]]`. This procedure continues until a donor record was found or all the similarity profiles have been used.
+#' the set of all donors is then made up out of all records which have the same values in the column indices in `similar[[2]]`. This procedure continues until a donor record was found or all the similarity profiles have been used.
 #' \cr
 #' `swaprate` sets the swaprate of households to be swapped, where a single swap counts for swapping 2 households, the sampled household and the corresponding donor.
 #' Prior to the procedure the swaprate is applied on the lowest hierarchy level, to determine the target number of swapped households in each of the lowest hierarchies. If the target numbers of a decimal point they will randomly be 
