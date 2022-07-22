@@ -1,6 +1,0 @@
-*.o
-*.so
-recordSwap/*.o
-recordSwap/*.so
-*.dll
-recordSwap/*.dll
