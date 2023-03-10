@@ -1,5 +1,10 @@
 # recordSwapping
 
+Package **recordSwapping** has been moved to [sdcMicro](https://github.com/sdcTools/sdcMicro)!
+Please use package `sdcMicro` and see `?sdcMicro::recordSwap()` or `vignette('recrodSwapping')` for details and examples.\n
+CRAN: https://github.com/sdcTools/sdcMicro/packages/sdcMicro/index.html\n
+Development: https://github.com/sdcTools/sdcMicro
+
 **recordSwapping** was an R-package for record swapping. Its aim was to develop a core library using pure `C++` (11) code to implement targeted record swapping (TRS). Since version `1.0.1`, the functionality has been included in [sdcMicro](https://github.com/sdcTools/sdcMicro) (versions >= `5.7.1`) where also any future development will take place.
 
 The current files of the "core" library can be found in  [github.com/sdcTools/sdcMicro/tree/master/src/recordSwap](https://github.com/sdcTools/sdcMicro/tree/master/src/recordSwap). 
